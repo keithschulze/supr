@@ -77,17 +77,19 @@ start_matlab <- function(matlab_path=NULL, port=9999, remote=FALSE, interval=NUL
 
 #' Run matlab code using R.matlab 
 #'
-#' Utility to create mini-environment that starts a matlab server, runs
-#' some R.matlab code and then shuts down the matlab server. A fully initialised
-#' R.matlab \code{\link{Matlab}} instance connected to a Matlab server will be 
-#' substituted into any reference to the variable \code{matlab} in the code 
-#' passed to the with_matlab function.
+#' Utility that starts a matlab server, initialises an R.matlab 
+#' \code{\link{Matlab}} instance connected to the Matlab server and passes it to 
+#' a single arity input function. Therefore code inside the input function has
+#' access to the \code{\link{Matlab}} instance. Once the function has completed 
+#' execution or if a failure occurs, the \code{\link{Matlab}} instance is 
+#' disconnected and the Matlab server shutdown. 
 #'
-#' @param code code block to be executed
+#' @param fn Single arity function that accepts an initialised/connected 
+#'  \code{\link{Matlab}} object as input.
 #' @param ... passed as arguments to \code{\link{start_matlab}}
 #' @export
-#' @return results of code block
-with_matlab <- function(code, ...) {
+#' @return results of the input \code{fn} function
+with_matlab <- function(fn, ...) {
   if (!requireNamespace("R.matlab", quietly = TRUE)) {
     stop("R.matlab needed for this function to work. Please install it.",
          call. = FALSE)
@@ -96,9 +98,8 @@ with_matlab <- function(code, ...) {
   mlab <- start_matlab(...)
 
   R.matlab::open.Matlab(mlab)
-  result <- tryCatch({eval(substitute(code), list(matlab = mlab))},
+  result <- tryCatch(fn(mlab),
                      finally = { R.matlab::close.Matlab(mlab) })
 
-  R.matlab::close.Matlab(mlab)
   return(result)
 }

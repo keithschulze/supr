@@ -21,8 +21,13 @@ test_that("with_matlab execute a code block in the context
     {
         matlab_path <- "/Applications/MATLAB_R2014b.app/bin/matlab"
         expect_true(
-          with_matlab(
-            R.matlab::isOpen(matlab)
-            , matlab_path)
+          with_matlab(function(matlab) R.matlab::isOpen(matlab),
+                      matlab_path = matlab_path)
         )
+        expect_true({
+          try(with_matlab(function(matlab) stop("I stopped"),
+                          matlab_path = matlab_path, port=9999))
+          with_matlab(function(matlab) R.matlab::isOpen(matlab),
+                      matlab_path = matlab_path, port=9999)
+        })
     })
