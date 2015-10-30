@@ -48,8 +48,8 @@ check_parallel <- function(verbose = TRUE) {
 #' Simple wrapper function for starting the matlab server using R.matlab
 #' @param matlab_path path to the matlab executable
 #' @param port port to start matlab server on
-#' @param remote If TRUE, all data to and from the MATLAB server will be 
-#'    transferred through the socket connection, otherwise the data will be 
+#' @param remote If TRUE, all data to and from the MATLAB server will be
+#'    transferred through the socket connection, otherwise the data will be
 #'    transferred via a temporary file.
 #' @param interval interval at which to poll server to check for results.
 #' @param maxTries maximum number of times to poll server for results.
@@ -75,29 +75,29 @@ start_matlab <- function(matlab_path=NULL, port=9999, remote=FALSE, interval=NUL
   return(matlab)
 }
 
-#' Run matlab code using R.matlab 
+#' Run matlab code using R.matlab
 #'
-#' Utility that starts a matlab server, initialises an R.matlab 
-#' \code{\link{Matlab}} instance connected to the Matlab server and passes it to 
+#' Utility that starts a matlab server, initialises an R.matlab
+#' \code{\link{Matlab}} instance connected to the Matlab server and passes it to
 #' a single arity input function. Therefore code inside the input function has
-#' access to the \code{\link{Matlab}} instance. Once the function has completed 
-#' execution or if a failure occurs, the \code{\link{Matlab}} instance is 
-#' disconnected and the Matlab server shutdown. 
+#' access to the \code{\link{Matlab}} instance. Once the function has completed
+#' execution or if a failure occurs, the \code{\link{Matlab}} instance is
+#' disconnected and the Matlab server shutdown.
 #'
-#' @param fn Single arity function that accepts an initialised/connected 
+#' @param fn Single arity function that accepts an initialised/connected
 #'  \code{\link{Matlab}} object as input.
 #' @param ... passed as arguments to \code{\link{start_matlab}}
 #' @export
 #' @return results of the input \code{fn} function
-with_matlab <- function(fn, ...) {
+with_matlab <- function(fn, trials = 60, interval = 1, ...) {
   if (!requireNamespace("R.matlab", quietly = TRUE)) {
     stop("R.matlab needed for this function to work. Please install it.",
          call. = FALSE)
   }
 
-  mlab <- start_matlab(...)
+  mlab <- start_matlab(interval = interval, ...)
 
-  R.matlab::open.Matlab(mlab)
+  R.matlab::open.Matlab(mlab, trials = trials, interval = interval)
   result <- tryCatch(fn(mlab),
                      finally = { R.matlab::close.Matlab(mlab) })
 
