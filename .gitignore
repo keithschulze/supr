@@ -5,3 +5,5 @@
 *.sublime-*
 InputStreamByteWrapper.class
 MatlabServer.m
+tests/testthat/MatlabServer.m
+tests/testthat/InputStreamByteWrapper.class
