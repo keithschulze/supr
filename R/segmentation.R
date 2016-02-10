@@ -10,19 +10,23 @@
 #'      Radius of morphological erosion operation to use to define the edge. This
 #'      will determine the 'thickness' of the edge. Defaults to 2px.
 #' @export
-#' @return binary image (\code{\link{im}} object) excluding any connected 
+#' @return binary image (\code{\link{im}} object) excluding any connected
 #'      components that touch the edge.
-clear_border <- function(image, win = NULL, r = image$xstep*2) {
-    label_im <- spatstat::connected(image)
+clear_border <- function(image, win = NULL, r = image$xstep*2, output_mask = FALSE) {
+    if (is.mask(image)) image <- spatstat::connected(image)
 
     if (is.null(win))
         win <- owin(image$xrange, image$yrange, unitname=image$units)
 
-    edge <- spatstat::setminus.owin(spatstat::as.mask(win, eps=label_im$xstep),
-                                    spatstat::erosion.owin(spatstat::as.mask(win, eps=label_im$xstep), r = r))
-    masked <- label_im[edge, drop=FALSE]
-    label_im$v[label_im$v %in% levels(factor(masked$v))] <- NA
-    spatstat::as.mask(label_im)
+    edge <- spatstat::setminus.owin(spatstat::as.mask(win, eps=image$xstep),
+                                    spatstat::erosion.owin(spatstat::as.mask(win, eps=image$xstep), r = r))
+    masked <- image[edge, drop=FALSE]
+    image$v[image$v %in% levels(factor(masked$v))] <- NA
+    if (output_mask) {
+      return(as.mask(image))
+    } else {
+      return(image)
+    }
 }
 
 #' Remove connected regions/objects smaller than a specified size
@@ -32,12 +36,51 @@ clear_border <- function(image, win = NULL, r = image$xstep*2) {
 #'      Exclude any objects smaller than this size. Units default to units of
 #'      the input \code{image}.
 #' @export
-#' @return binary image (\code{\link{im}} object) containing only connected 
+#' @return binary image (\code{\link{im}} object) containing only connected
 #'      components > \code{size}.
-remove_small_objects <- function(image, size = 50) {
-    label_im <- connected(image)
-    rp <- region_props(label_im)
+remove_small_objects <- function(image, size = 50, output_mask = FALSE) {
+    if (spatstat::is.mask(image)) image <- connected(image)
+    rp <- region_props(image)
     exclude <- names(Filter(function(r) { r$area() <= size }, rp))
-    label_im$v[label_im$v %in% exclude] <- NA
-    spatstat::as.mask(label_im)
+    image$v[image$v %in% exclude] <- NA
+    if (output_mask) {
+      return(as.mask(image))
+    } else {
+      return(image)
+    }
+}
+
+#' Watershed segmentation of spatstat im object. Requires imager package
+#' \link{\code{watershed}} function to perform watershed segmentation.
+#'
+#' @param im image object (grayscale or binary)
+#' @param seeds planar point pattern containing seed/marker coordinates
+#'
+#' @return label image.
+watershed <- function(im, seeds, fill_lines = TRUE) {
+  if (!requireNamespace("imager", quietly = TRUE)) {
+    stop("imager package needed for this function to work. Please install it.",
+      call. = FALSE)
+  }
+
+  # Create seed image
+  seed_img <- spatstat::as.im(seeds, W = spatstat::boundingbox(im), dimyx = dim(im))
+  seed_img$v <- as.matrix(as.data.frame.matrix(seed_img$v)) #Hack to get rid of table annot
+  seed_cimg <- imager::im2cimg(seed_img)
+
+  # Creat distance transform and seed labels
+  seed_cimg_dm <- 1 - imager::distance_transform(sign(seed_cimg), 1)
+  seed_cimg_lbl <- imager::label(seed_cimg)
+
+  # Do watershed
+  seed_cimg_ws <- imager::watershed(seed_cimg_lbl, seed_cimg_dm, fill_lines = fill_lines)
+
+  # Convert back to im
+  im_ws <- imager::cimg2im(seed_cimg_ws, W = spatstat::boundingbox(im))
+  out <- im_ws[im, drop = FALSE]
+
+  #Convert fill line to background
+  if (!fill_lines) out$v[out$v == 0] <- NA
+
+  return(out)
 }
