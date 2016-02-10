@@ -10,4 +10,5 @@ LazyData: true
 Imports: spatstat,
     foreach
 Suggests: ggplot2,
-    testthat
+    testthat,
+    imager
