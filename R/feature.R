@@ -23,8 +23,8 @@ local_max <- function(df, mask) {
 #' @param threshold Minimal value that maxima can have (default = 50).
 #' @param which.marks If ppp is marked with multiple types, this specifies
 #'  which marks to calculated peaks from.
-#' @return ppp containing only the detected maxima.
 #' @export
+#' @return ppp containing only the detected maxima.
 peak_local_max <- function(points, min_distance, threshold = 50, which.marks = NULL) {
   if (!spatstat::is.marked(points)) stop("Marked point pattern is required.")
 

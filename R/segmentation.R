@@ -13,17 +13,17 @@
 #' @return binary image (\code{\link{im}} object) excluding any connected
 #'      components that touch the edge.
 clear_border <- function(image, win = NULL, r = image$xstep*2, output_mask = FALSE) {
-    if (is.mask(image)) image <- spatstat::connected(image)
+    if (spatstat::is.mask(image)) image <- spatstat::connected(image)
 
     if (is.null(win))
-        win <- owin(image$xrange, image$yrange, unitname=image$units)
+        win <- spatstat::owin(image$xrange, image$yrange, unitname=image$units)
 
     edge <- spatstat::setminus.owin(spatstat::as.mask(win, eps=image$xstep),
                                     spatstat::erosion.owin(spatstat::as.mask(win, eps=image$xstep), r = r))
     masked <- image[edge, drop=FALSE]
     image$v[image$v %in% levels(factor(masked$v))] <- NA
     if (output_mask) {
-      return(as.mask(image))
+      return(spatstat::as.mask(image))
     } else {
       return(image)
     }
@@ -39,12 +39,12 @@ clear_border <- function(image, win = NULL, r = image$xstep*2, output_mask = FAL
 #' @return binary image (\code{\link{im}} object) containing only connected
 #'      components > \code{size}.
 remove_small_objects <- function(image, size = 50, output_mask = FALSE) {
-    if (spatstat::is.mask(image)) image <- connected(image)
+    if (spatstat::is.mask(image)) image <- spatstat::connected(image)
     rp <- region_props(image)
     exclude <- names(Filter(function(r) { r$area() <= size }, rp))
     image$v[image$v %in% exclude] <- NA
     if (output_mask) {
-      return(as.mask(image))
+      return(spatstat::as.mask(image))
     } else {
       return(image)
     }
@@ -55,7 +55,7 @@ remove_small_objects <- function(image, size = 50, output_mask = FALSE) {
 #'
 #' @param im image object (grayscale or binary)
 #' @param seeds planar point pattern containing seed/marker coordinates
-#'
+#' @export
 #' @return label image.
 watershed <- function(im, seeds, fill_lines = TRUE) {
   if (!requireNamespace("imager", quietly = TRUE)) {

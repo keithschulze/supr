@@ -104,7 +104,7 @@ fortify.owin <- function(model, data, ...) {
     ymax <- model$yrange[2]
     data.frame(xmin, xmax, ymin, ymax)
   } else if (model$type == "polygonal") {
-    df <- ldply(mapply(function(win, index) {
+    df <- plyr::ldply(mapply(function(win, index) {
       data.frame(id=index, x=win$x, y=win$y)
     }, model$bdry, 1:length(model$bdry), SIMPLIFY = FALSE),
     data.frame)
