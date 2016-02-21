@@ -57,30 +57,34 @@ remove_small_objects <- function(image, size = 50, output_mask = FALSE) {
 #' @param seeds planar point pattern containing seed/marker coordinates
 #' @export
 #' @return label image.
-watershed <- function(im, seeds, fill_lines = TRUE) {
+watershed <- function(mask, seeds = NULL, fill_lines = TRUE) {
   if (!requireNamespace("imager", quietly = TRUE)) {
     stop("imager package needed for this function to work. Please install it.",
       call. = FALSE)
   }
 
+  cmask <- imager::im2cimg(spatstat::as.im(mask, na.replace = 0))
+
   # Create seed image
-  seed_img <- spatstat::as.im(seeds, W = spatstat::boundingbox(im), dimyx = dim(im))
+  seed_img <- spatstat::pixellate(seeds, W = mask, padzero = TRUE)
   seed_img$v <- as.matrix(as.data.frame.matrix(seed_img$v)) #Hack to get rid of table annot
   seed_cimg <- imager::im2cimg(seed_img)
 
   # Creat distance transform and seed labels
   seed_cimg_dm <- 1 - imager::distance_transform(sign(seed_cimg), 1)
+  # seed_cimg_dm <- imager::distance_transform(cmask, value = 0)
+  seed_cimg_dm <- imager::mult(list(seed_cimg_dm-min(seed_cimg_dm), cmask))
   seed_cimg_lbl <- imager::label(seed_cimg)
 
   # Do watershed
   seed_cimg_ws <- imager::watershed(seed_cimg_lbl, seed_cimg_dm, fill_lines = fill_lines)
+  seed_cimg_ws <- imager::mult(list(seed_cimg_ws, cmask))
 
   # Convert back to im
-  im_ws <- imager::cimg2im(seed_cimg_ws, W = spatstat::boundingbox(im))
-  out <- im_ws[im, drop = FALSE]
+  im_ws <- imager::cimg2im(seed_cimg_ws, W = spatstat::as.rectangle(mask))
 
   #Convert fill line to background
-  if (!fill_lines) out$v[out$v == 0] <- NA
+  im_ws$v[im_ws$v == 0] <- NA
 
-  return(out)
+  return(im_ws)
 }
