@@ -42,13 +42,14 @@ peak_local_max <- function(points, min_distance, threshold = 50, which.marks = N
 
   # exclude any points below threshold
   points <- subset(points, marks >= threshold)
+  n <- spatstat::npoints(points)
+  if (n == 0) return(NA)
 
   # calculate pairwise distance matrix between remaining marks
   dm <- spatstat::pairdist(points)
 
   # create a mask where only pairs within the minimum distance are TRUE
   dm_mask <- dm < min_distance
-  n <- spatstat::npoints(points)
 
   # convert point pattern to a data.frame
   df <- spatstat::as.data.frame.ppp(points)
