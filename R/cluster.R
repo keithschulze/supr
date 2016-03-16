@@ -156,6 +156,32 @@ multi_local_lcross <- function(points, which.marks=NULL,
   }
 }
 
+#' Co-cluster analysis using self- and cross-type local L-function analysis
+#'
+#' Performs self- and cross-type local L-function analysis at a specified
+#' radius on a multi-type PPP object. The column of marks to use for types
+#' is specified using the \code{which.marks}. Users have the option to return
+#' either a data.frame containing 2 columns with the self- and cross-type
+#' local L-function values or the original PPP where the self- and cross-type
+#' local L-function value are added to the marks.
+#'
+#' @param points A point pattern (object of class \code{ppp})
+#' @param rvalue A single value of the distance argument r at which
+#'  the L-function should be computed.
+#' @param which.marks Specifies the column of marks to use as types. Must be
+#'  specified is the PPP has multiple mark categories.
+#' @param mark.original Logical value specifying whether the original point
+#'  pattern should be marked with the output and returned.
+#' @param ... Extra arguments are passed to the \code{local_l}
+#'  and \code{local_l_cross} functions.
+#' @return Self- and cross-type local L-functions values for each point are
+#'  returned as either:
+#'    \itemize{
+#'      \item data.frame (if \code{mark.original} is \code{FALSE})
+#'      \item marks in the original points (\code{ppp}) object passed as
+#'            as argument (if \code{mark.original} is \code{TRUE})
+#'    }
+#' @export
 co_cluster_l_cross <- function(points, rvalue, which.marks=NULL,
                       mark.original=FALSE, ...) {
   if (missing(rvalue))
@@ -226,6 +252,28 @@ co_cluster_l_cross <- function(points, rvalue, which.marks=NULL,
   }
 }
 
+
+#' Quadrant analysis of self- vs. cross local L-function values
+#'
+#' @description Divides a relationship between self- and cross-type local
+#' L-function values into quadrants based on a sepcified threshold. Determines
+#' the quadrant number in which each point in a multi-type point pattern lies,
+#' where quadrants are labelled:
+#' \enumerate{
+#'    \item lower left
+#'    \item lower right
+#'    \item upper left
+#'    \item upper right
+#'  }
+#'
+#' @param points point pattern (multi-type \code{ppp} object)
+#' @param threshold threshold that splits x and y axis of the quadrant plot
+#' @param ll Column name of the self-type local L values
+#' @param llcross Column names of the cross-type local L values
+#' @param mark.original Logical value indicating whether labels for each point should
+#'    be added back to the original point pattern as marks or return as a vector.
+#' @return vector or point pattern depending on \code{mark.original}
+#' @export
 co_cluster_quadrant <- function(points, threshold, ll, llcross, mark.original = TRUE) {
   quad <- function(ll, llcross, threshold) {
     if(ll > threshold && llcross > threshold) {
@@ -266,9 +314,9 @@ co_cluster_quadrant <- function(points, threshold, ll, llcross, mark.original = 
 #' Grid interpolation to create a surface map over a spatial point pattern
 #' where the marks of the point pattern are interpolated between the points.
 #' Function currently uses matlab \code{griddata} function for interpolation
-#' using the \code{\link{R.matlab}} package.
+#' using the \code{R.matlab} package.
 #'
-#' @param matlab \code{\link{Matlab}} instance
+#' @param matlab \code{Matlab} instance
 #' @param data marked point pattern (\code{\link{ppp}} object) with
 #'    with a single vector of marks to be interpolated as a surface
 #' @param xsize x pixel size of output image

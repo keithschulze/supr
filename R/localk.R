@@ -87,37 +87,23 @@
 #'      Second-order neighbourhood analysis of mapped point patterns.
 #'      \emph{Ecology} \bold{68}, 473--477.
 #' @examples
-#'  data(ponderosa)
-#'  X <- ponderosa
+#'  X <- spatstat::ponderosa
 #'
 #'  # compute all the local L functions
-#'  L <- localL(X)
+#'  L <- local_l(X)
 #'
 #'  # All local functions can also be executed in parallel. Simply register a
 #'  # parallel backend for the foreach package. For example using the
 #'  # doParallel (this needs to be installed) backend:
-#'  library(doParallel)
-#'  cl <- makeCluster(detectCores()-2)
-#'  registerDoParallel(cl)
-#'  L <- localL(X)
+#'
+#'  cl <- parallel::makeCluster(2)
+#'  doParallel::registerDoParallel(cl)
+#'  L <- local_l(X)
+#'  foreach::registerDoSEQ()
+#'  parallel::stopCluster(cl)
 #'
 #'  # plot all the local L functions against r
 #'  plot(L, main="local L functions for ponderosa", legend=FALSE)
-#'
-#'  # plot only the local L function for point number 7
-#'  plot(L, iso007 ~ r)
-#'
-#'  # compute the values of L(r) for r = 12 metres
-#'  L12 <- localL(X, rvalue=12)
-#'
-#'  # Spatially interpolate the values of L12
-#'  # Compare Figure 5(b) of Getis and Franklin (1987)
-#'  X12 <- X \%mark\% L12
-#'  Z <- Smooth(X12, sigma=5, dimyx=128)
-#'
-#'  plot(Z, col=topo.colors(128), main="smoothed neighbourhood density")
-#'  contour(Z, add=TRUE)
-#'  points(X, pch=16, cex=0.5)
 local_k <- function(X, ..., correction="Ripley", verbose=TRUE, rvalue=NULL) {
   spatstat::verifyclass(X, "ppp")
   local_k_engine(X, ..., correction=correction, verbose=verbose, rvalue=rvalue)
@@ -198,7 +184,11 @@ local_l <- function(X, ..., correction="Ripley", verbose=TRUE, rvalue=NULL) {
 #'  reports during the calculation.
 #' @param rvalue Optional. A \emph{single} value of the distance argument
 #'  \eqn{r} at which the function L or K should be computed.
-#' @param sigma, varcov
+#' @param sigma
+#'  Optional arguments passed to \code{\link{density.ppp}} to control
+#'  the kernel smoothing procedure for estimating \code{lambda},
+#'  if \code{lambda} is missing.
+#'  @param varcov
 #'  Optional arguments passed to \code{\link{density.ppp}} to control
 #'  the kernel smoothing procedure for estimating \code{lambda},
 #'  if \code{lambda} is missing.
@@ -417,9 +407,9 @@ local_k_engine <- function(X, ..., wantL=FALSE, lambda=NULL,
   desc <- c(desc, c("distance argument r", "theoretical Poisson %s"))
   labl <- c(labl, c("r", "%s[pois](r)"))
   # create fv object
-  K <- spatstat::fv(df, "r", ylab, "theo", , alim, labl, desc, fname=fnam)
+  K <- spatstat::fv(df, "r", ylab, "theo", "", alim, labl, desc, fname=fnam)
   # default is to display them all
-  spatstat::formula(K) <- . ~ r
+  spatstat::formula(K) <- (. ~ r)
   spatstat::unitname(K) <- spatstat::unitname(X)
   attr(K, "correction") <- correction
   return(K)

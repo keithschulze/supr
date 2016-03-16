@@ -1,16 +1,5 @@
 #' Feature detection functions.
 
-#' Determine local max from a subset of a planar point pattern
-local_max <- function(df, mask) {
-  if (!"index" %in% colnames(df)) df$index <- rownames(df)
-  if (!"mask" %in% colnames(df)) df$mask <- TRUE
-
-  masked_df <- df[mask, ]
-  masked_df_min_idx <- masked_df[-which.max(masked_df$marks),]$index
-  df[masked_df_min_idx,'mask'] <- FALSE
-  return(df)
-}
-
 #' Peak local max
 #'
 #' Determine local maxima of marked point pattern. Indentifies
@@ -26,6 +15,18 @@ local_max <- function(df, mask) {
 #' @export
 #' @return ppp containing only the detected maxima.
 peak_local_max <- function(points, min_distance, threshold = 50, which.marks = NULL) {
+
+  # Determine local max from a subset of a planar point pattern
+  local_max <- function(df, mask) {
+    if (!"index" %in% colnames(df)) df$index <- rownames(df)
+    if (!"mask" %in% colnames(df)) df$mask <- TRUE
+
+    masked_df <- df[mask, ]
+    masked_df_min_idx <- masked_df[-which.max(masked_df$marks),]$index
+    df[masked_df_min_idx,'mask'] <- FALSE
+    return(df)
+  }
+
   if (!spatstat::is.marked(points)) stop("Marked point pattern is required.")
 
   if (spatstat::markformat(points) == "dataframe") {

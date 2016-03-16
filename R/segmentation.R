@@ -9,9 +9,11 @@
 #' @param r Optional.
 #'      Radius of morphological erosion operation to use to define the edge. This
 #'      will determine the 'thickness' of the edge. Defaults to 2px.
+#' @param output_mask Optional. Logical value to indicate whether a mask of objects should
+#'  be returned. If \code{FALSE} a labelled image will be returned.
 #' @export
-#' @return binary image (\code{\link{im}} object) excluding any connected
-#'      components that touch the edge.
+#' @return labelled image (\code{\link{im}} object) or mask excluding any
+#' connected components that touch the border of the \code{win}.
 clear_border <- function(image, win = NULL, r = image$xstep*2, output_mask = FALSE) {
     if (spatstat::is.mask(image)) image <- spatstat::connected(image)
 
@@ -34,10 +36,12 @@ clear_border <- function(image, win = NULL, r = image$xstep*2, output_mask = FAL
 #' @param image binary image (instance of \code{\link{im}} object)
 #' @param size Optional. Defaults to 50 units.
 #'      Exclude any objects smaller than this size. Units default to units of
-#'      the input \code{image}.
+#'      the input \code{im}.
+#' @param output_mask Optional. Logical value to indicate whether a mask of objects should
+#'  be returned. If \code{FALSE} a labelled image will be returned.
 #' @export
-#' @return binary image (\code{\link{im}} object) containing only connected
-#'      components > \code{size}.
+#' @return labelled image (\code{\link{im}} object) or mask containing only
+#' connected components > \code{size}.
 remove_small_objects <- function(image, size = 50, output_mask = FALSE) {
     if (spatstat::is.mask(image)) image <- spatstat::connected(image)
     rp <- region_props(image)
@@ -50,14 +54,19 @@ remove_small_objects <- function(image, size = 50, output_mask = FALSE) {
     }
 }
 
-#' Watershed segmentation of spatstat im object. Requires imager package
-#' \link{\code{watershed}} function to perform watershed segmentation.
+#' Watershed segmentation of spatstat im object.
 #'
-#' @param im image object (grayscale or binary)
+#' Basically a wrapper around the imager package
+#' \code{\link[imager]{watershed}} function to perform marker assisted watershed
+#' segmentation of spatstat \code{im} objects.
+#'
+#' @param mask image object (grayscale or binary)
 #' @param seeds planar point pattern containing seed/marker coordinates
+#' @param fill_lines Logical value indicating whether watershed lines should be
+#'  filled or left as background.
 #' @export
-#' @return label image.
-watershed <- function(mask, seeds = NULL, fill_lines = TRUE) {
+#' @return labelled image.
+watershed <- function(mask, seeds, fill_lines = TRUE) {
   if (!requireNamespace("imager", quietly = TRUE)) {
     stop("imager package needed for this function to work. Please install it.",
       call. = FALSE)

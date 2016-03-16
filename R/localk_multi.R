@@ -189,6 +189,15 @@ local_l_cross <- function(X, i, j, ..., correction="Ripley", verbose=TRUE, rvalu
 #'      during the calculation.
 #' @param rvalue Optional. A \emph{single} value of the distance argument \eqn{r}
 #'      at which the function L or K should be computed.
+#' @param lambdaIJ Optional. A matrix containing estimates of the product of the
+#'      intensities \code{lambdaI} and \code{lambdaJ} for each pair of points
+#'      of types \code{i} and \code{j} respectively.
+#' @param sigma Optional argument passed to \code{\link{density.ppp}} to control
+#'      the kernel smoothing procedure for estimating \code{lambda}, if
+#'      \code{lambda} is missing.
+#' @param varcov Optional argument passed to \code{\link{density.ppp}} to control
+#'      the kernel smoothing procedure for estimating \code{lambda}, if
+#'      \code{lambda} is missing.
 #' @return If \code{rvalue} is given, the result is a numeric vector of equal
 #'      length to the number of points in X_i.
 #'
@@ -208,9 +217,8 @@ local_l_cross <- function(X, i, j, ..., correction="Ripley", verbose=TRUE, rvalu
 #'      Second-order neighbourhood analysis of mapped point patterns.
 #'      \emph{Ecology} \bold{68}, 473--477.
 local_k_cross_inhom <-
-  function(X, I, J, lambdaI=NULL, lambdaJ=NULL, ..., wantL=FALSE,
-           correction="Ripley", verbose=TRUE, rvalue=NULL, lambdaIJ= NULL,
-           sigma=NULL, varcov=NULL) {
+  function(X, i, j, lambdaI=NULL, lambdaJ=NULL, ..., correction="Ripley",
+           verbose=TRUE, rvalue=NULL, lambdaIJ= NULL, sigma=NULL, varcov=NULL) {
     spatstat::verifyclass(X, "ppp")
 
     if(!spatstat::is.multitype(X, dfok=FALSE))
@@ -224,10 +232,12 @@ local_k_cross_inhom <-
     I <- (marx == i)
     if(!any(I))
       stop(paste("No points have mark i =", i))
+    nI <- sum(I)
 
     J <- (marx == j)
     if(!any(J))
       stop(paste("No points have mark j =", j))
+    nJ <- sum(J)
 
     dangerous <- c("lambdaI", "lambdaJ", "lambdaIJ")
     dangerI <- dangerJ <- TRUE
@@ -249,7 +259,7 @@ local_k_cross_inhom <-
       # validate intensity vector
       if(length(lambdaI) != nI)
         stop(paste("The length of", sQuote("lambdaI"),
-                   "should equal the number of", Iname))
+                   "should equal the number of", i))
     } else
       stop(paste(sQuote("lambdaI"), "should be a vector or an image"))
 
@@ -269,7 +279,7 @@ local_k_cross_inhom <-
       # validate intensity vector
       if(length(lambdaJ) != nJ)
         stop(paste("The length of", sQuote("lambdaJ"),
-                   "should equal the number of", Jname))
+                   "should equal the number of", j))
     } else
       stop(paste(sQuote("lambdaJ"), "should be a vector or an image"))
 
@@ -279,9 +289,9 @@ local_k_cross_inhom <-
       if(!is.matrix(lambdaIJ))
         stop("lambdaIJ should be a matrix")
       if(nrow(lambdaIJ) != nI)
-        stop(paste("nrow(lambdaIJ) should equal the number of", Iname))
+        stop(paste("nrow(lambdaIJ) should equal the number of", i))
       if(ncol(lambdaIJ) != nJ)
-        stop(paste("ncol(lambdaIJ) should equal the number of", Jname))
+        stop(paste("ncol(lambdaIJ) should equal the number of", j))
     } else dangerIJ <- FALSE
 
     danger <- dangerI || dangerJ || dangerIJ
@@ -291,7 +301,7 @@ local_k_cross_inhom <-
     }
 
     local_k_multi_engine(X=X, I=I, J=J, lambdaI=lambdaI, lambdaJ=lambdaJ,
-                      ..., wantL=wantL, correction=correction, lambdaIJ=lambdaIJ,
+                      ..., correction=correction, lambdaIJ=lambdaIJ,
                       verbose=verbose, rvalue=rvalue)
   }
 
@@ -306,8 +316,7 @@ local_l_cross_inhom <-
 
 local_k_multi_engine <-
   function(X, I, J, lambdaI=NULL, lambdaJ=NULL, ..., wantL=FALSE,
-           correction="Ripley", lambdaIJ=NULL, verbose=TRUE, rvalue=NULL)
-  {
+           correction="Ripley", lambdaIJ=NULL, verbose=TRUE, rvalue=NULL) {
     spatstat::verifyclass(X, "ppp")
 
     npts <- spatstat::npoints(X)
@@ -507,9 +516,9 @@ local_k_multi_engine <-
     desc <- c(desc, c("distance argument r", "theoretical Poisson %s"))
     labl <- c(labl, c("r", "%s[pois](r)"))
     # create fv object
-    K <- spatstat::fv(df, "r", ylab, "theo", , alim, labl, desc, fname=fnam)
+    K <- spatstat::fv(df, "r", ylab, "theo", "", alim, labl, desc, fname=fnam)
     # default is to display them all
-    spatstat::formula(K) <- . ~ r
+    spatstat::formula(K) <- (. ~ r)
     spatstat::unitname(K) <- spatstat::unitname(X)
     attr(K, "correction") <- correction
     return(K)
