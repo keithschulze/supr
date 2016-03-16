@@ -6,7 +6,7 @@ Authors@R: person("Keith", "Schulze", "", "keith.schulze@monash.edu", role = c("
 Description: Collection of utilities for the analysis and visualisation of
     single molecule localisation data.
 Depends:
-    R (>= 3.1.3)
+    R (>= 3.2.0)
 License: MIT + file LICENSE
 LazyData: true
 Imports:
