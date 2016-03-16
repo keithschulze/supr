@@ -11,6 +11,8 @@ read.moleculelists(file_paths, rdr = read.moleculelist_rapidstorm, ...)
 
 \item{rdr}{reader function that takes a file path as input and returns
 a ppp object.}
+
+\item{...}{extra arguments passed to \code{rdr} function.}
 }
 \value{
 \code{list(\link{ppp})}

@@ -2,21 +2,24 @@
 % Please edit documentation in R/segmentation.R
 \name{watershed}
 \alias{watershed}
-\title{Watershed segmentation of spatstat im object. Requires imager package
-\link{\code{watershed}} function to perform watershed segmentation.}
+\title{Watershed segmentation of spatstat im object.}
 \usage{
-watershed(im, seeds, fill_lines = TRUE)
+watershed(mask, seeds, fill_lines = TRUE)
 }
 \arguments{
-\item{im}{image object (grayscale or binary)}
+\item{mask}{image object (grayscale or binary)}
 
 \item{seeds}{planar point pattern containing seed/marker coordinates}
+
+\item{fill_lines}{Logical value indicating whether watershed lines should be
+filled or left as background.}
 }
 \value{
-label image.
+labelled image.
 }
 \description{
-Watershed segmentation of spatstat im object. Requires imager package
-\link{\code{watershed}} function to perform watershed segmentation.
+Basically a wrapper around the imager package
+\code{\link[imager]{watershed}} function to perform marker assisted watershed
+segmentation of spatstat \code{im} objects.
 }
 

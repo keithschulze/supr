@@ -7,7 +7,7 @@
 interpolate_surface(matlab, data, xsize = 10, ysize = 10, method = "v4")
 }
 \arguments{
-\item{matlab}{\code{\link{Matlab}} instance}
+\item{matlab}{\code{Matlab} instance}
 
 \item{data}{marked point pattern (\code{\link{ppp}} object) with
 with a single vector of marks to be interpolated as a surface}
@@ -27,6 +27,6 @@ with a single vector of marks to be interpolated as a surface}
 Grid interpolation to create a surface map over a spatial point pattern
 where the marks of the point pattern are interpolated between the points.
 Function currently uses matlab \code{griddata} function for interpolation
-using the \code{\link{R.matlab}} package.
+using the \code{R.matlab} package.
 }
 

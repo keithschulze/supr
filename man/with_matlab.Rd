@@ -8,7 +8,11 @@ with_matlab(fn, trials = 60, interval = 1, ...)
 }
 \arguments{
 \item{fn}{Single arity function that accepts an initialised/connected
-\code{\link{Matlab}} object as input.}
+\code{Matlab} object as input.}
+
+\item{trials}{maximum number of times to poll server for results.}
+
+\item{interval}{interval at which to poll server to check for results.}
 
 \item{...}{passed as arguments to \code{\link{start_matlab}}}
 }
@@ -17,10 +21,10 @@ results of the input \code{fn} function
 }
 \description{
 Utility that starts a matlab server, initialises an R.matlab
-\code{\link{Matlab}} instance connected to the Matlab server and passes it to
+\code{Matlab} instance connected to the Matlab server and passes it to
 a single arity input function. Therefore code inside the input function has
-access to the \code{\link{Matlab}} instance. Once the function has completed
-execution or if a failure occurs, the \code{\link{Matlab}} instance is
+access to the \code{Matlab} instance. Once the function has completed
+execution or if a failure occurs, the \code{Matlab} instance is
 disconnected and the Matlab server shutdown.
 }
 

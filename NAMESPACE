@@ -2,6 +2,8 @@
 
 export(all_types)
 export(clear_border)
+export(co_cluster_l_cross)
+export(co_cluster_quadrant)
 export(exchange_xy_for_marks)
 export(fortify.im)
 export(fortify.owin)

@@ -34,7 +34,10 @@ reports during the calculation.}
 \item{rvalue}{Optional. A \emph{single} value of the distance argument
 \eqn{r} at which the function L or K should be computed.}
 
-\item{sigma, }{varcov
+\item{sigma}{Optional arguments passed to \code{\link{density.ppp}} to control
+the kernel smoothing procedure for estimating \code{lambda},
+if \code{lambda} is missing.
+@param varcov
 Optional arguments passed to \code{\link{density.ppp}} to control
 the kernel smoothing procedure for estimating \code{lambda},
 if \code{lambda} is missing.}

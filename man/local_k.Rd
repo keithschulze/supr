@@ -93,37 +93,23 @@ Computation can be done in parallel by registering a parallel backend for
 the \code{\link{foreach}} package.
 }
 \examples{
- data(ponderosa)
- X <- ponderosa
+ X <- spatstat::ponderosa
 
  # compute all the local L functions
- L <- localL(X)
+ L <- local_l(X)
 
  # All local functions can also be executed in parallel. Simply register a
  # parallel backend for the foreach package. For example using the
  # doParallel (this needs to be installed) backend:
- library(doParallel)
- cl <- makeCluster(detectCores()-2)
- registerDoParallel(cl)
- L <- localL(X)
+
+ cl <- parallel::makeCluster(2)
+ doParallel::registerDoParallel(cl)
+ L <- local_l(X)
+ foreach::registerDoSEQ()
+ parallel::stopCluster(cl)
 
  # plot all the local L functions against r
  plot(L, main="local L functions for ponderosa", legend=FALSE)
-
- # plot only the local L function for point number 7
- plot(L, iso007 ~ r)
-
- # compute the values of L(r) for r = 12 metres
- L12 <- localL(X, rvalue=12)
-
- # Spatially interpolate the values of L12
- # Compare Figure 5(b) of Getis and Franklin (1987)
- X12 <- X \\\%mark\\\% L12
- Z <- Smooth(X12, sigma=5, dimyx=128)
-
- plot(Z, col=topo.colors(128), main="smoothed neighbourhood density")
- contour(Z, add=TRUE)
- points(X, pch=16, cex=0.5)
 }
 \references{
 Getis, A. and Franklin, J. (1987)

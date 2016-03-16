@@ -2,7 +2,8 @@
 % Please edit documentation in R/feature.R
 \name{peak_local_max}
 \alias{peak_local_max}
-\title{Peak local max}
+\title{Feature detection functions.
+Peak local max}
 \usage{
 peak_local_max(points, min_distance, threshold = 50, which.marks = NULL)
 }

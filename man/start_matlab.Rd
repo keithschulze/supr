@@ -21,7 +21,7 @@ transferred via a temporary file.}
 \item{maxTries}{maximum number of times to poll server for results.}
 }
 \value{
-\code{\link{Matlab}} instance
+\code{Matlab} instance
 }
 \description{
 Simple wrapper function for starting the matlab server using R.matlab

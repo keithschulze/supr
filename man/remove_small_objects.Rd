@@ -11,11 +11,14 @@ remove_small_objects(image, size = 50, output_mask = FALSE)
 
 \item{size}{Optional. Defaults to 50 units.
 Exclude any objects smaller than this size. Units default to units of
-the input \code{image}.}
+the input \code{im}.}
+
+\item{output_mask}{Optional. Logical value to indicate whether a mask of objects should
+be returned. If \code{FALSE} a labelled image will be returned.}
 }
 \value{
-binary image (\code{\link{im}} object) containing only connected
-     components > \code{size}.
+labelled image (\code{\link{im}} object) or mask containing only
+connected components > \code{size}.
 }
 \description{
 Remove connected regions/objects smaller than a specified size

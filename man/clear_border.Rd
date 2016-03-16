@@ -15,10 +15,13 @@ Window/mask that defines edges (instance of \code{\link{owin}} object)}
 \item{r}{Optional.
 Radius of morphological erosion operation to use to define the edge. This
 will determine the 'thickness' of the edge. Defaults to 2px.}
+
+\item{output_mask}{Optional. Logical value to indicate whether a mask of objects should
+be returned. If \code{FALSE} a labelled image will be returned.}
 }
 \value{
-binary image (\code{\link{im}} object) excluding any connected
-     components that touch the edge.
+labelled image (\code{\link{im}} object) or mask excluding any
+connected components that touch the border of the \code{win}.
 }
 \description{
 Clear connect regions of a binary image that touch either the edges of the
