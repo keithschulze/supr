@@ -72,9 +72,10 @@ read.moleculelist_nstorm <- function(filepath, nonspecific = TRUE) {
 #' @param file_paths list of file_paths to read
 #' @param rdr reader function that takes a file path as input and returns
 #'            a ppp object.
+#' @param ... extra arguments passed to \code{rdr} function.
 #' @return \code{list(\link{ppp})}
 #' @export
-read.moleculelists <- function(file_paths, rdr = read.moleculelist.rapidstorm, ...) {
+read.moleculelists <- function(file_paths, rdr = read.moleculelist_rapidstorm, ...) {
   return(lapply(file_paths, rdr, ...))
 }
 
@@ -96,10 +97,10 @@ read.polygon_roi <- function(file_path, xsize = 1, ysize = 1) {
   }
   win <- asxy(win)
 
-  w.area <- Area.xypolygon(win)
-  if (sum(w.area) < 0) win <- reverse.xypolygon(win)
+  w.area <- spatstat::Area.xypolygon(win)
+  if (sum(w.area) < 0) win <- spatstat::reverse.xypolygon(win)
 
-  return(owin(poly=win, unitname="nm"))
+  return(spatstat::owin(poly=win, unitname="nm"))
 }
 
 #' Function to read multiple windows using a specified reader function

@@ -31,7 +31,7 @@ all_types <- function(points, which.marks=NULL, ...) {
 #'
 #' Wrapper for \code{\link{local_l}} that allows local L-function to
 #' be computed on each type of a multitype \code{\link{ppp}} object
-#' where type is specidied by the \code{marks} column denoted by the parameter 
+#' where type is specidied by the \code{marks} column denoted by the parameter
 #' \code{which.marks}.
 #'
 #' If an r-value is specified, \code{\link{local_l}} values can be appended as
@@ -94,8 +94,8 @@ multi_local_l <- function(points, which.marks=spatstat::marks(points),
 #' Cross-type Local L-function analysis
 #'
 #' Wrapper for \code{\link{local_l_cross}} that allows cross-type
-#' local L-function to be computed for specified multitype 
-#' \code{\link{ppp}} object using \code{marks} specified by the 
+#' local L-function to be computed for specified multitype
+#' \code{\link{ppp}} object using \code{marks} specified by the
 #' parameter \code{which.marks}.
 #'
 #' If an r-value is specified, localL values can be appended as marks on the
@@ -156,6 +156,32 @@ multi_local_lcross <- function(points, which.marks=NULL,
   }
 }
 
+#' Co-cluster analysis using self- and cross-type local L-function analysis
+#'
+#' Performs self- and cross-type local L-function analysis at a specified
+#' radius on a multi-type PPP object. The column of marks to use for types
+#' is specified using the \code{which.marks}. Users have the option to return
+#' either a data.frame containing 2 columns with the self- and cross-type
+#' local L-function values or the original PPP where the self- and cross-type
+#' local L-function value are added to the marks.
+#'
+#' @param points A point pattern (object of class \code{ppp})
+#' @param rvalue A single value of the distance argument r at which
+#'  the L-function should be computed.
+#' @param which.marks Specifies the column of marks to use as types. Must be
+#'  specified is the PPP has multiple mark categories.
+#' @param mark.original Logical value specifying whether the original point
+#'  pattern should be marked with the output and returned.
+#' @param ... Extra arguments are passed to the \code{local_l}
+#'  and \code{local_l_cross} functions.
+#' @return Self- and cross-type local L-functions values for each point are
+#'  returned as either:
+#'    \itemize{
+#'      \item data.frame (if \code{mark.original} is \code{FALSE})
+#'      \item marks in the original points (\code{ppp}) object passed as
+#'            as argument (if \code{mark.original} is \code{TRUE})
+#'    }
+#' @export
 co_cluster_l_cross <- function(points, rvalue, which.marks=NULL,
                       mark.original=FALSE, ...) {
   if (missing(rvalue))
@@ -226,6 +252,28 @@ co_cluster_l_cross <- function(points, rvalue, which.marks=NULL,
   }
 }
 
+
+#' Quadrant analysis of self- vs. cross local L-function values
+#'
+#' @description Divides a relationship between self- and cross-type local
+#' L-function values into quadrants based on a sepcified threshold. Determines
+#' the quadrant number in which each point in a multi-type point pattern lies,
+#' where quadrants are labelled:
+#' \enumerate{
+#'    \item lower left
+#'    \item lower right
+#'    \item upper left
+#'    \item upper right
+#'  }
+#'
+#' @param points point pattern (multi-type \code{ppp} object)
+#' @param threshold threshold that splits x and y axis of the quadrant plot
+#' @param ll Column name of the self-type local L values
+#' @param llcross Column names of the cross-type local L values
+#' @param mark.original Logical value indicating whether labels for each point should
+#'    be added back to the original point pattern as marks or return as a vector.
+#' @return vector or point pattern depending on \code{mark.original}
+#' @export
 co_cluster_quadrant <- function(points, threshold, ll, llcross, mark.original = TRUE) {
   quad <- function(ll, llcross, threshold) {
     if(ll > threshold && llcross > threshold) {
@@ -244,7 +292,7 @@ co_cluster_quadrant <- function(points, threshold, ll, llcross, mark.original = 
   if(spatstat::markformat(points) != "dataframe")
     stop("Point pattern marks must be a data.frame which includes columns for LocalL and LocalLCross values.")
 
-  marx <- marks(points)
+  marx <- spatstat::marks(points)
   if(all(colnames(marx) %in% c(ll, llcross)))
     stop(paste(ll, " and/or ", llcross, "were not found in mark columns."))
 
@@ -254,7 +302,7 @@ co_cluster_quadrant <- function(points, threshold, ll, llcross, mark.original = 
   if (mark.original) {
     n <- paste("Quad", threshold, sep="")
     marx[,n] <- group
-    marks(points) <- marx
+    spatstat::marks(points) <- marx
     return(points)
   } else {
     return(group)
@@ -262,13 +310,13 @@ co_cluster_quadrant <- function(points, threshold, ll, llcross, mark.original = 
 }
 
 #' Interpolate a surface over a spatial point pattern
-#' 
+#'
 #' Grid interpolation to create a surface map over a spatial point pattern
 #' where the marks of the point pattern are interpolated between the points.
-#' Function currently uses matlab \code{griddata} function for interpolation 
-#' using the \code{\link{R.matlab}} package.
-#' 
-#' @param matlab \code{\link{Matlab}} instance
+#' Function currently uses matlab \code{griddata} function for interpolation
+#' using the \code{R.matlab} package.
+#'
+#' @param matlab \code{Matlab} instance
 #' @param data marked point pattern (\code{\link{ppp}} object) with
 #'    with a single vector of marks to be interpolated as a surface
 #' @param xsize x pixel size of output image
@@ -276,7 +324,7 @@ co_cluster_quadrant <- function(points, threshold, ll, llcross, mark.original = 
 #' @param method interpolation method for matlab gridata function, choices are
 #'    "nearest", "linear", "natural", "cubic" and "v4" (default).
 #' @export
-#' @return \code{\link{im}} of interpolated surface with pixel sizes 
+#' @return \code{\link{im}} of interpolated surface with pixel sizes
 #'    specified by \code{xsize} and \code{ysize}.
 interpolate_surface <- function(matlab, data, xsize = 10, ysize = 10, method = "v4") {
   if (!requireNamespace("R.matlab", quietly = TRUE)) {
@@ -305,7 +353,7 @@ interpolate_surface <- function(matlab, data, xsize = 10, ysize = 10, method = "
 
   out <- R.matlab::getVariable(matlab, "vq")
   spatstat::im(out$vq, xrange = data$window$xrange, yrange = data$window$yrange,
-               unitname = unitname(data))
+               unitname = spatstat::unitname(data))
 }
 
 

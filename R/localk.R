@@ -1,9 +1,9 @@
 #' Neighbourhood density function
-#' 
+#'
 #' Computes the neighbourhood density function, a local version of
 #' the \eqn{K}-function or \eqn{L}-function, defined by Getis and Franklin (1987).
 #' Note: Equivalent to \code{\link{localK}} and \code{\link{localL}}
-#' except that they can take advantage of parallel computation \eqn{K}-function 
+#' except that they can take advantage of parallel computation \eqn{K}-function
 #' or \eqn{L}-function via \code{\link{foreach}} package.
 #'
 #' The command \code{localL} computes the \emph{neighbourhood density function},
@@ -21,7 +21,7 @@
 #'   L[i](r) = sqrt( (a/((n-1)* pi)) * sum[j] e[i,j])
 #' }
 #' where the sum is over all points \eqn{j \neq i}{j != i} that lie
-#' within a distance \eqn{r} of the \eqn{i}th point, 
+#' within a distance \eqn{r} of the \eqn{i}th point,
 #' \eqn{a} is the area of the observation window, \eqn{n} is the number
 #' of points in \code{X}, and \eqn{e_{ij}}{e[i,j]} is an edge correction
 #' term (as described in \code{\link{Kest}}).
@@ -69,11 +69,11 @@
 #' @return If \code{rvalue} is given, the result is a numeric vector
 #'  of length equal to the number of points in the point pattern.
 #'
-#'  If \code{rvalue} is absent, the result is 
+#'  If \code{rvalue} is absent, the result is
 #'  an object of class \code{"fv"}, see \code{\link{fv.object}},
 #'  which can be plotted directly using \code{\link{plot.fv}}.
 #'  Essentially a data frame containing columns
-#'  \item{r}{the vector of values of the argument \eqn{r} 
+#'  \item{r}{the vector of values of the argument \eqn{r}
 #'    at which the function \eqn{K} has been  estimated
 #'  }
 #'  \item{theo}{the theoretical value \eqn{K(r) = \pi r^2}{K(r) = pi * r^2}
@@ -87,37 +87,23 @@
 #'      Second-order neighbourhood analysis of mapped point patterns.
 #'      \emph{Ecology} \bold{68}, 473--477.
 #' @examples
-#'  data(ponderosa)
-#'  X <- ponderosa
+#'  X <- spatstat::ponderosa
 #'
 #'  # compute all the local L functions
-#'  L <- localL(X)
+#'  L <- local_l(X)
 #'
-#'  # All local functions can also be executed in parallel. Simply register a 
-#'  # parallel backend for the foreach package. For example using the 
+#'  # All local functions can also be executed in parallel. Simply register a
+#'  # parallel backend for the foreach package. For example using the
 #'  # doParallel (this needs to be installed) backend:
-#'  library(doParallel)
-#'  cl <- makeCluster(detectCores()-2)
-#'  registerDoParallel(cl)
-#'  L <- localL(X)
+#'
+#'  cl <- parallel::makeCluster(2)
+#'  doParallel::registerDoParallel(cl)
+#'  L <- local_l(X)
+#'  foreach::registerDoSEQ()
+#'  parallel::stopCluster(cl)
 #'
 #'  # plot all the local L functions against r
 #'  plot(L, main="local L functions for ponderosa", legend=FALSE)
-#'
-#'  # plot only the local L function for point number 7
-#'  plot(L, iso007 ~ r)
-#'
-#'  # compute the values of L(r) for r = 12 metres
-#'  L12 <- localL(X, rvalue=12)
-#'
-#'  # Spatially interpolate the values of L12
-#'  # Compare Figure 5(b) of Getis and Franklin (1987)
-#'  X12 <- X \%mark\% L12
-#'  Z <- Smooth(X12, sigma=5, dimyx=128)
-#'
-#'  plot(Z, col=topo.colors(128), main="smoothed neighbourhood density")
-#'  contour(Z, add=TRUE)
-#'  points(X, pch=16, cex=0.5)
 local_k <- function(X, ..., correction="Ripley", verbose=TRUE, rvalue=NULL) {
   spatstat::verifyclass(X, "ppp")
   local_k_engine(X, ..., correction=correction, verbose=verbose, rvalue=rvalue)
@@ -129,10 +115,10 @@ local_l <- function(X, ..., correction="Ripley", verbose=TRUE, rvalue=NULL) {
 }
 
 #' Inhomogeneous Neighbourhood density function
-#' 
+#'
 #' Computes spatially-weighted versions of the local \eqn{K}-function or \eqn{L}-function.
 #' Note: Equivalent to \code{\link{localKinhom}} and \code{\link{localLinhom}}
-#' except that they can take advantage of parallel computation \eqn{K}-function 
+#' except that they can take advantage of parallel computation \eqn{K}-function
 #' or \eqn{L}-function via \code{\link{foreach}} package.
 #'
 #' The functions \code{local_k_inhom} and \code{local_l_inhom}
@@ -140,7 +126,7 @@ local_l <- function(X, ..., correction="Ripley", verbose=TRUE, rvalue=NULL) {
 #' neighbourhood density function implemented in
 #' \code{\link{local_k}} and \code{\link{local_l}}.
 #'
-#' Given a spatial point pattern \code{X}, the inhomogeneous neighbourhood 
+#' Given a spatial point pattern \code{X}, the inhomogeneous neighbourhood
 #' density function \eqn{L_i(r)}{L[i](r)} associated with the \eqn{i}th point
 #' in \code{X} is computed by
 #' \deqn{
@@ -149,7 +135,7 @@ local_l <- function(X, ..., correction="Ripley", verbose=TRUE, rvalue=NULL) {
 #'   L[i](r) = sqrt( (1/pi) * sum[j] e[i,j]/lambda[j])
 #' }
 #' where the sum is over all points \eqn{j \neq i}{j != i} that lie
-#' within a distance \eqn{r} of the \eqn{i}th point, 
+#' within a distance \eqn{r} of the \eqn{i}th point,
 #' \eqn{\lambda_j}{\lambda[j]} is the estimated intensity of the
 #' point pattern at the point \eqn{j}, and \eqn{e_{ij}}{e[i,j]} is an edge correction
 #' term (as described in \code{\link{Kest}}).
@@ -198,7 +184,11 @@ local_l <- function(X, ..., correction="Ripley", verbose=TRUE, rvalue=NULL) {
 #'  reports during the calculation.
 #' @param rvalue Optional. A \emph{single} value of the distance argument
 #'  \eqn{r} at which the function L or K should be computed.
-#' @param sigma, varcov 
+#' @param sigma
+#'  Optional arguments passed to \code{\link{density.ppp}} to control
+#'  the kernel smoothing procedure for estimating \code{lambda},
+#'  if \code{lambda} is missing.
+#'  @param varcov
 #'  Optional arguments passed to \code{\link{density.ppp}} to control
 #'  the kernel smoothing procedure for estimating \code{lambda},
 #'  if \code{lambda} is missing.
@@ -206,11 +196,11 @@ local_l <- function(X, ..., correction="Ripley", verbose=TRUE, rvalue=NULL) {
 #' @return If \code{rvalue} is given, the result is a numeric vector
 #'  of length equal to the number of points in the point pattern.
 #'
-#'  If \code{rvalue} is absent, the result is 
+#'  If \code{rvalue} is absent, the result is
 #'  an object of class \code{"fv"}, see \code{\link{fv.object}},
 #'  which can be plotted directly using \code{\link{plot.fv}}.
 #'  Essentially a data frame containing columns
-#'  \item{r}{the vector of values of the argument \eqn{r} 
+#'  \item{r}{the vector of values of the argument \eqn{r}
 #'    at which the function \eqn{K} has been  estimated
 #'  }
 #'  \item{theo}{the theoretical value \eqn{K(r) = \pi r^2}{K(r) = pi * r^2}
@@ -223,7 +213,7 @@ local_l <- function(X, ..., correction="Ripley", verbose=TRUE, rvalue=NULL) {
 #' @references Getis, A. and Franklin, J. (1987)
 #'      Second-order neighbourhood analysis of mapped point patterns.
 #'      \emph{Ecology} \bold{68}, 473--477.
-local_k_inhom <- function(X, lambda=NULL, ..., correction="Ripley", verbose=TRUE, 
+local_k_inhom <- function(X, lambda=NULL, ..., correction="Ripley", verbose=TRUE,
                         rvalue=NULL, sigma=NULL, varcov=NULL) {
   spatstat::verifyclass(X, "ppp")
 
@@ -235,14 +225,14 @@ local_k_inhom <- function(X, lambda=NULL, ..., correction="Ripley", verbose=TRUE
     lambda <- as.numeric(lambda)
   } else {
     # validate
-    if(is.im(lambda))
+    if(spatstat::is.im(lambda))
       lambda <- spatstat::safelookup(lambda, X)
-    else if(is.ppm(lambda))
+    else if(spatstat::is.ppm(lambda))
       lambda <- predict(lambda, locations=X, type="trend")
     else if(is.function(lambda))
       lambda <- lambda(X$x, X$y)
     else if(is.numeric(lambda) && is.vector(as.numeric(lambda)))
-      spatstat::check.nvector(lambda, npoints(X))
+      spatstat::check.nvector(lambda, spatstat::npoints(X))
     else stop(paste(sQuote("lambda"),
                     "should be a vector, a pixel image, or a function"))
   }
@@ -251,7 +241,7 @@ local_k_inhom <- function(X, lambda=NULL, ..., correction="Ripley", verbose=TRUE
 }
 
 #' @export
-local_l_inhom <- function(X, lambda=NULL, ..., correction="Ripley", verbose=TRUE, 
+local_l_inhom <- function(X, lambda=NULL, ..., correction="Ripley", verbose=TRUE,
                         rvalue=NULL, sigma=NULL, varcov=NULL) {
   local_k_inhom(X, lambda=lambda, wantL=TRUE, ...,
               correction=correction, verbose=verbose, rvalue=rvalue,
@@ -321,7 +311,7 @@ local_k_engine <- function(X, ..., wantL=FALSE, lambda=NULL,
            df <- foreach::`%dopar%`(fe, local_k_calc(i, closeI=I, distIJ=DIJ, breaks=breaks,
                                                    weight=if (weighted) weightJ else NULL,
                                                    pb = if(verbose && !parallel) function(i) spatstat::progressreport(i, n=npts) else NULL))
-           
+
            # Hack to quickly convert list to data.frame
            attributes(df) <- list(row.names=c(NA_integer_, length(r)),
                                   class="data.frame",
@@ -417,9 +407,9 @@ local_k_engine <- function(X, ..., wantL=FALSE, lambda=NULL,
   desc <- c(desc, c("distance argument r", "theoretical Poisson %s"))
   labl <- c(labl, c("r", "%s[pois](r)"))
   # create fv object
-  K <- spatstat::fv(df, "r", ylab, "theo", , alim, labl, desc, fname=fnam)
+  K <- spatstat::fv(df, "r", ylab, "theo", "", alim, labl, desc, fname=fnam)
   # default is to display them all
-  spatstat::formula(K) <- . ~ r
+  spatstat::formula(K) <- (. ~ r)
   spatstat::unitname(K) <- spatstat::unitname(X)
   attr(K, "correction") <- correction
   return(K)

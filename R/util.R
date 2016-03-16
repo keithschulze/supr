@@ -54,7 +54,7 @@ check_parallel <- function(verbose = TRUE) {
 #' @param interval interval at which to poll server to check for results.
 #' @param maxTries maximum number of times to poll server for results.
 #' @export
-#' @return \code{\link{Matlab}} instance
+#' @return \code{Matlab} instance
 start_matlab <- function(matlab_path=NULL, port=9999, remote=FALSE, interval=NULL,
                          maxTries=NULL) {
   if (!requireNamespace("R.matlab", quietly = TRUE)) {
@@ -78,14 +78,16 @@ start_matlab <- function(matlab_path=NULL, port=9999, remote=FALSE, interval=NUL
 #' Run matlab code using R.matlab
 #'
 #' Utility that starts a matlab server, initialises an R.matlab
-#' \code{\link{Matlab}} instance connected to the Matlab server and passes it to
+#' \code{Matlab} instance connected to the Matlab server and passes it to
 #' a single arity input function. Therefore code inside the input function has
-#' access to the \code{\link{Matlab}} instance. Once the function has completed
-#' execution or if a failure occurs, the \code{\link{Matlab}} instance is
+#' access to the \code{Matlab} instance. Once the function has completed
+#' execution or if a failure occurs, the \code{Matlab} instance is
 #' disconnected and the Matlab server shutdown.
 #'
 #' @param fn Single arity function that accepts an initialised/connected
-#'  \code{\link{Matlab}} object as input.
+#'  \code{Matlab} object as input.
+#' @param trials maximum number of times to poll server for results.
+#' @param interval interval at which to poll server to check for results.
 #' @param ... passed as arguments to \code{\link{start_matlab}}
 #' @export
 #' @return results of the input \code{fn} function

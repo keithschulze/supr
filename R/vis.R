@@ -71,18 +71,18 @@ fortify.im <- function(model, data, ...) {
   spatstat::as.data.frame.im(model)
 }
 
-#' Fortify method for unpacking \code{\link{owin}} objects.
+#' Fortify method for unpacking \code{\link[spatstat]{owin}} objects.
 #'
 #' This method extracts relevant coordinates for plotting a
-#' \link{\code{owin}} object to allow it to be plotted with ggplot.
+#' \code{\link[spatstat]{owin}} object to allow it to be plotted with ggplot.
 #'
 #' @method fortify owin
-#' @seealso \code{\link{owin}}
+#' @seealso \code{\link[spatstat]{owin}}
 #' @param model owin object
 #' @param data not used by this method
 #' @param ... ignored
 #' @return data.frame containing windows information. Information in the
-#'  data.frame depends on the type of the \code{\link{owin}}:
+#'  data.frame depends on the type of the \code{\link[spatstat]{owin}}:
 #'  \itemize{
 #'    \item \emph{rectangular windows}: data.frame with a single row and
 #'      4 columns that contain xmin, xmax, ymin, ymax extents of the recangle.
@@ -104,7 +104,7 @@ fortify.owin <- function(model, data, ...) {
     ymax <- model$yrange[2]
     data.frame(xmin, xmax, ymin, ymax)
   } else if (model$type == "polygonal") {
-    df <- ldply(mapply(function(win, index) {
+    df <- plyr::ldply(mapply(function(win, index) {
       data.frame(id=index, x=win$x, y=win$y)
     }, model$bdry, 1:length(model$bdry), SIMPLIFY = FALSE),
     data.frame)
