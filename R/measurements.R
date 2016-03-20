@@ -5,11 +5,11 @@
 #'
 #' @seealso \code{\link{connected}}
 #'          \code{\link{im}}
-#' @param label_im \code{\link{im}} 
+#' @param label_im \code{\link{im}}
 #'  Label input image for whcih properties are extracted for each label.
-#' @param intensity_im \code{\link{im}} 
+#' @param intensity_im \code{\link{im}}
 #'  Intensity image with same dimensions as label image.
-#' @param points \code{\link{ppp}} 
+#' @param points \code{\link{ppp}}
 #'  Point pattern with a window matching the dimensions of the input label image.
 #' @export
 #' @return list
@@ -33,41 +33,30 @@
 #'  region i.e., they are lazy. This means you can filter on a specific property
 #'  without needing to compute all properties.
 region_props <- function(label_im, intensity_im = NULL, points = NULL) {
-    t <- spatstat::tiles(spatstat::tess(image = label_im))
+  if (!spatstat::is.im(label_im)) stop("label image is required.")
 
-    # Creates a list of functions to each different properties for each
-    # tile/region
-    lapply(t, function(tile) {
-      list(
-        area = function() {
-          spatstat::area.owin(tile)
-        },
-        bbox = function() {
-          spatstat::boundingbox(tile)
-        },
-        centroid = function() {
-          spatstat::centroid.owin(tile)
-        },
-        diameter = function() {
-          spatstat::diameter.owin(tile)
-        },
-        perimeter = function() {
-          spatstat::perimeter(tile)
-        }
-      )
-    })
-}
+  if (!any_objects(label_im)) return(list())
 
-#' Calculate r value at L(r) - r peaks
-#'
-#' @seealso \code{\link{Lest}}
-#' @param lest fv output from \code{\link{Lest}} function
-#' @param variable names of the curve for which to calculate peak r
-#' @return num peak r-value
-#' @export
-peak_r <- function(lest, variable) {
-  df <- as.data.frame(lest)
-  lminusr <- df[,variable] - df$r
-  r_peak <- which.max(lminusr)
-  df$r[r_peak]
+  t <- spatstat::tiles(spatstat::tess(image = label_im))
+
+  # tile/region
+  lapply(t, function(tile) {
+    list(
+      area = function() {
+        spatstat::area.owin(tile)
+      },
+      bbox = function() {
+        spatstat::boundingbox(tile)
+      },
+      centroid = function() {
+        spatstat::centroid.owin(tile)
+      },
+      diameter = function() {
+        spatstat::diameter.owin(tile)
+      },
+      perimeter = function() {
+        spatstat::perimeter(tile)
+      }
+    )
+  })
 }
