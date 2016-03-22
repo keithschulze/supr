@@ -27,6 +27,8 @@ peak_local_max <- function(points, min_distance, threshold = 50, which.marks = N
     return(df)
   }
 
+  if (!spatstat::is.ppp(points)) stop("points must be a planar point pattern (ppp.object).")
+
   if (!spatstat::is.marked(points)) stop("Marked point pattern is required.")
 
   if (spatstat::markformat(points) == "dataframe") {
@@ -44,7 +46,7 @@ peak_local_max <- function(points, min_distance, threshold = 50, which.marks = N
   # exclude any points below threshold
   points <- subset(points, marks >= threshold)
   n <- spatstat::npoints(points)
-  if (n == 0) return(NA)
+  if (n == 0) return(ppp(c(), c(), window = spatstat::as.rectangle(points$window)))
 
   # calculate pairwise distance matrix between remaining marks
   dm <- spatstat::pairdist(points)
@@ -63,4 +65,31 @@ peak_local_max <- function(points, min_distance, threshold = 50, which.marks = N
   points <- points[res$mask]
 
   points
+}
+
+#' Calculate r value at which L(r) - r peaks
+#'
+#' @seealso \code{\link{Lest}}
+#' @param lest fv output from \code{\link{Lest}} function
+#' @param variable names of the curve for which to calculate peak r
+#' @return num peak r-value
+#' @export
+peak_r <- function(lest, variable, span=25) {
+  peaks <- function(series, span) {
+    z <- embed(series, span)
+    s <- span%/%2
+    v<- max.col(z) == 1 + s
+    result <- c(rep(FALSE,s),v)
+    result <- result[1:(length(result)-s)]
+    result
+  }
+
+  r <- lest[, "r", drop=TRUE]
+  obs <- lest[, variable, drop=TRUE]
+
+  which(peaks(obs-r, span))[1]
+  # df <- as.data.frame(lest)
+  # lminusr <- df[,variable] - df$r
+  # r_peak <- which.max(lminusr)
+  # df$r[r_peak]
 }

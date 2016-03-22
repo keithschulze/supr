@@ -105,3 +105,18 @@ with_matlab <- function(fn, trials = 60, interval = 1, ...) {
 
   return(result)
 }
+
+#' Determine whether there are any objects in a mask or label image
+#'
+#' @param img label (\code{\link[spatstat]{im.object}}) or mask
+#'  (\code{\link[spatstat]{owin.object}}) image.
+#' @return logical value indicating whether any object were detected.
+any_objects <- function(img) {
+  if (spatstat::is.im(img)) {
+    any(as.logical(img$v), na.rm = TRUE)
+  } else if(spatstat::is.mask(img)) {
+    any(img$m, na.rm = TRUE)
+  } else {
+    stop(paste(label_img, " is not a label or mask image."))
+  }
+}
