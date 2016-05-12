@@ -113,7 +113,12 @@ with_matlab <- function(fn, trials = 60, interval = 1, ...) {
 #' @return logical value indicating whether any object were detected.
 any_objects <- function(img) {
   if (spatstat::is.im(img)) {
-    any(as.logical(img$v), na.rm = TRUE)
+    m <- img$v
+    if (is.factor(m)) {
+      levels(m) > 0
+    } else {
+      any(as.logical(m), na.rm = TRUE)
+    }
   } else if(spatstat::is.mask(img)) {
     any(img$m, na.rm = TRUE)
   } else {
