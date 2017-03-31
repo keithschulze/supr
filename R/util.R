@@ -99,9 +99,9 @@ with_matlab <- function(fn, trials = 60, interval = 1, ...) {
 
   mlab <- start_matlab(interval = interval, ...)
 
-  R.matlab::open.Matlab(mlab, trials = trials, interval = interval)
+  open(mlab, trials = trials, interval = interval)
   result <- tryCatch(fn(mlab),
-                     finally = { R.matlab::close.Matlab(mlab) })
+                     finally = { close(mlab) })
 
   return(result)
 }
