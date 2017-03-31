@@ -98,7 +98,7 @@ read.polygon_roi <- function(file_path, xsize = 1, ysize = 1) {
   win <- asxy(win)
 
   w.area <- spatstat.utils::Area.xypolygon(win)
-  if (sum(w.area) < 0) win <- spatstat::reverse.xypolygon(win)
+  if (sum(w.area) < 0) win <- spatstat.utils::reverse.xypolygon(win)
 
   return(spatstat::owin(poly=win, unitname="nm"))
 }
