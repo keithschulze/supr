@@ -1,7 +1,7 @@
 Package: supr
 Title: Analysis of single molecule localisation data from super-resolution
     microscopy
-Version: 0.2.0
+Version: 0.3.0
 Authors@R: person("Keith", "Schulze", "", "keith.schulze@monash.edu", role = c("aut", "cre"))
 Description: Collection of utilities for the analysis and visualisation of
     single molecule localisation data.
