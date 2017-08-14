@@ -16,10 +16,10 @@ test_that("xy coords can be swapped with different coords in marks", {
   expect_equal(p_out$marks$orig_y, y)
 })
 
-test_that("with_matlab execute a code block in the context 
+test_that("with_matlab execute a code block in the context
     of an environment where the matlab is setup",
     {
-        matlab_path <- "/Applications/MATLAB_R2014b.app/bin/matlab"
+        matlab_path <- "/Applications/MATLAB_R2017a.app/bin/matlab"
         expect_true(
           with_matlab(function(matlab) R.matlab::isOpen(matlab),
                       matlab_path = matlab_path)

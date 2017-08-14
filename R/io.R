@@ -8,10 +8,10 @@
 #'          single molecule localisations and other parameters/columns in
 #'          original csv file attached as marks.
 #' @export
-read.moleculelist_thunderstorm <- function(filepath) {
+read.moleculelist_thunderstorm <-
+    function(filepath) {
   data <- read.csv(filepath, header=TRUE)
-  names(data) <- c("frame", "x", "y", "sigma", "intensity", "offset",
-    "bkgstd", "uncertainty")
+  names(data) <- c("frame", "x", "y", "sigma", "intensity", "offset", "bkgstd", "uncertainty")
   fd_ppp <- spatstat::ppp(data$x, data$y,
     xrange=c(min(data$x), max(data$x)),
     yrange=c(min(data$y), max(data$y)),
@@ -31,9 +31,10 @@ read.moleculelist_thunderstorm <- function(filepath) {
 #'          single molecule localisations and other parameters/columns in
 #'          original csv file attached as marks.
 #' @export
-read.moleculelist_rapidstorm <- function(filepath) {
+read.moleculelist_rapidstorm <-
+    function(filepath, hdrs = c("x", "y", "frame", "amplitude", "chisq", "bkgd")) {
   data <- read.table(file = filepath, header = FALSE)
-  names(data) <- c("x", "y", "frame", "amplitude", "chisq", "bkgd")
+  names(data) <- hdrs
   fd_ppp <- spatstat::ppp(data$x, data$y,
     xrange=c(min(data$x), max(data$x)),
     yrange=c(min(data$y), max(data$y)),

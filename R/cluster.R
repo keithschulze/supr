@@ -75,7 +75,7 @@ multi_local_l <- function(points, which.marks=spatstat::marks(points),
     # Fix marks data.frame headings and re-factorise split column.
     marx <- spatstat::marks(out.points)
     if (spatstat::markformat(points) == "vector") {
-      colnames(marx) <- c(spatstat::short.deparse(substitute(points)),
+      colnames(marx) <- c(spatstat.utils::short.deparse(substitute(points)),
                           paste("L", rvalue, sep=""))
       marx[,1] <- factor(marx[,1], labels = ll_labels)
     } else {
@@ -142,7 +142,7 @@ multi_local_lcross <- function(points, which.marks=NULL,
     # Fix marks data.frame headings and re-factorise split column.
     marx <- cbind(spatstat::marks(points), llc)
     if (spatstat::markformat(points) == "vector") {
-      colnames(marx) <- c(spatstat::short.deparse(substitute(points)),
+      colnames(marx) <- c(spatstat.utils::short.deparse(substitute(points)),
                           paste("L", rvalue, sep=""))
     } else {
       colnames(marx) <- c(colnames(marx)[-length(colnames(marx))],
@@ -224,7 +224,7 @@ co_cluster_l_cross <- function(points, rvalue, which.marks=NULL,
     # Fix marks data.frame headings and re-factorise split column.
     marx <- spatstat::marks(out.points)
     if (spatstat::markformat(points) == "vector") {
-      colnames(marx) <- c(spatstat::short.deparse(substitute(points)),
+      colnames(marx) <- c(spatstat.utils::short.deparse(substitute(points)),
                           paste("L", rvalue, sep=""),
                           paste("L", rvalue, "c", sep=""))
       marx[,1] <- factor(marx[,1], labels = mark.names)

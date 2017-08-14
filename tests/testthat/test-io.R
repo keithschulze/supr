@@ -13,7 +13,7 @@ test_that("thunderstorm data can be read into ppp", {
     ppp <- spatstat::ppp(x, y, xrange = c(min(x), max(x)),
         yrange = c(min(y), max(y)), marks = df, unitname = "nm")
     ppp_read <- read.moleculelist_thunderstorm("./data/thunder.csv")
-    
+
     expect_that(ppp_read, is_a("ppp"))
     expect_equal(ppp, ppp_read)
     expect_equal(colnames(spatstat::marks(ppp_read)),
@@ -34,7 +34,7 @@ test_that("RapidStorm data can be read into ppp", {
 
     expect_that(ppp_read, is_a("ppp"))
     expect_equal(ppp, ppp_read)
-    expect_equal(colnames(spatstat::marks(ppp_read)), 
+    expect_equal(colnames(spatstat::marks(ppp_read)),
         c("frame", "amplitude", "chisq", "bkgd"))
 })
 
@@ -56,6 +56,19 @@ test_that("multiple RapidStorm datasets can be read into ppps", {
 
     expect_that(ppp_read_list, is_a("list"))
     expect_equal(ppp_list, ppp_read_list)
+})
+
+test_that("New RapidStorm files with different headers can be read", {
+    path <- "./data/rapid_new.txt"
+    hdr <- c("x", "precision_x", "y", "precision_y", "frame", "amplitude", "chisq", "bkgd")
+    x <- c(7968.46, 8161.44, 8279.78, 8738.33, 7662.00, 6666.49)
+    y <- c(8205.47, 7215.19, 5469.47, 8342.27, 7521.18, 4078.94)
+
+    ppp <- read.moleculelist_rapidstorm(path, hdrs = c("x", "precision_x", "y", "precision_y", "frame", "amplitud
+e", "chisq", "bkgd"))
+    df <- as.data.frame(head(ppp))
+    expect_equal(df$x, x)
+    expect_equal(df$y, y)
 })
 
 test_that("N-STORM dataset can be read into ppp", {

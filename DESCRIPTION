@@ -1,7 +1,7 @@
 Package: supr
 Title: Analysis of single molecule localisation data from super-resolution
     microscopy
-Version: 0.1
+Version: 0.2.0
 Authors@R: person("Keith", "Schulze", "", "keith.schulze@monash.edu", role = c("aut", "cre"))
 Description: Collection of utilities for the analysis and visualisation of
     single molecule localisation data.
@@ -11,10 +11,12 @@ License: MIT + file LICENSE
 LazyData: true
 Imports:
     spatstat,
+    doParallel,
     foreach,
+    ggplot2,
+    imager,
     plyr
 Suggests:
-    ggplot2,
     testthat,
-    imager
+    R.matlab
 RoxygenNote: 5.0.1
