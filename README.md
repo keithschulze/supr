@@ -1,6 +1,6 @@
 # Super-resolution microscopy analysis in R
 
-__WARNING: This package is still under heavy development and documentation is very incomplete. Better documentation and a vignette will be forthcoming at some point.__
+__WARNING: This package is no longer under development. It is now archived.__
 
 Package of tools for doing various types of super-resolution microscopy data analysis. At the moment the package has very limited functionality, but the hope is to expand its functionality substantially in the future. Currently the tools are primarily focused around providing Ripley's K type cluster analysis<sup>1</sup> and co-cluster<sup>2</sup> analysis of single molecule super-resolution microscopy data. The code heavily utilises [_spatstat_](http://spatstat.github.io/) and, at this early stage, any potential users are strongly encouraged to get familiar with _spatstat_ before attempting to use this package.
 
